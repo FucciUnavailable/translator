@@ -8,6 +8,21 @@ module.exports = function (app) {
 
   app.route('/api/translate')
     .post((req, res) => {
+      let response
+      const {text, locale}= req.body
+      let translatedText = translator.translate(text, locale)
+      if(locale == "british-to-american"){
+        let regex = /(?<=\d)\.(?=\d)/g
+         response = translatedText.replace(regex, ":")
+
+
+      }
+      if(locale == "american-to-british"){
+        let regex = /(?<=\d)\:(?=\d)/gm
+         response = translatedText.replace(regex, ".")
+      }
+        res.send({text: text, translation: response})
+
       
     });
 };
