@@ -1,119 +1,87 @@
-const americanOnly = require('./american-only.js');
-const americanToBritishSpelling = require('./american-to-british-spelling.js');
-const americanToBritishTitles = require("./american-to-british-titles.js")
-const britishOnly = require('./british-only.js')
-
 class Translator {
-    dictionaryCheck(term,dictionary){
-        for(let word in dictionary){
-            if(word == term){
-                return dictionary[word]
+    constructor() {
+        this.mappings = {
+            "american-to-british": {
+                spelling: require('./american-to-british-spelling.js'),
+                titles: require('./american-titles.js'),
+                dictionary: require('./american-only.js')
+            },
+            "british-to-american": {
+                spelling: this.invertMapping(require('./american-to-british-spelling.js')),
+                titles: require('./british-titles.js'),
+                dictionary: require('./british-only.js')
             }
-        }
+        };
     }
-    spellCheckA(term){
-        for(let word in americanToBritishSpelling){
-            if (word == term){
-                return americanToBritishSpelling[word]
-            }
-        }
-    }
-    spellCheckB(term){
-        for(let word in americanToBritishSpelling){
-            if(americanToBritishSpelling[word]== term){
-                return word
-            }
-        }
-    }
-    prefixEditA(term){
-       for(let prefix in americanToBritishTitles){
-            if(term==americanToBritishTitles[prefix]){
-                return prefix
-            }
-       }
-    }
-    prefixEditB(term){
-        for(let prefix in americanToBritishTitles){
-             if(term==prefix){
-                 return americanToBritishTitles[prefix]
-             }
-        }
-     }
-    translateAmerican(text){
-        let textArray = text.split(' ')
-        let responseArray = []
-        for (let word of textArray){
-            if(this.dictionaryCheck(word,americanOnly)){
 
-                responseArray.push(this.dictionaryCheck(word,americanOnly))
-            }else{
- 
-                responseArray.push(word)
-            }
-        }
-        return responseArray
+    // Helper to invert key-value mappings
+    invertMapping(mapping) {
+        return Object.fromEntries(Object.entries(mapping).map(([key, value]) => [value, key]));
     }
-        translateBritish(text){
-        let textArray = text.split(' ')
-        let responseArray = []
-        for (let word of textArray){
-            if(this.dictionaryCheck(word,britishOnly)){
-   
-                responseArray.push(this.dictionaryCheck(word,britishOnly))
-            }else{
-   
-                responseArray.push(word)
-            }
+
+    // Generic text replacement logic
+    replaceText(text, mapping) {
+        let result = text;
+        for (const [term, replacement] of Object.entries(mapping)) {
+            const regex = new RegExp(`\\b${term}\\b`, 'gi'); // Match whole words case-insensitively
+            result = result.replace(regex, `<span class="highlight">`+replacement+`</span>`);
         }
-        return responseArray
+        return result;
     }
-    translate(text,locale){
-        if(locale=="american-to-british"){
-            
-            const translatedText = this.translateAmerican(text)
-            const spellCheckedText = []
-            for(let term of translatedText){
-                if(this.spellCheckA(term)){
-                    spellCheckedText.push(this.spellCheckA(term))
-                    
-                }else{
-                    spellCheckedText.push(term)
-                }
-            } 
-            for(let i=0;i< spellCheckedText.length;i++){
-                if(this.prefixEditA(spellCheckedText[i])){
-              
-                    spellCheckedText[i] = this.prefixEditA(spellCheckedText[i])
+    // text replace titles 
+    replaceTitles(text, mapping){
+        let result = text.split(" ")
+        for (let i = 0; i<result.length; i++){
+            for(const [term,replacement] of Object.entries(mapping)){
+                if(result[i].toLowerCase()===term){
+                    result[i]=(`<span class="highlight">`+replacement+`</span>`)
                 }
             }
-            console.log(spellCheckedText)
-            return spellCheckedText.join(' ')  
         }
-        
-        
-        
-         if(locale=="british-to-american"){
-            const translatedText = this.translateBritish(text)
-            const spellCheckedText = []
-            for(let term of translatedText){
-                if(this.spellCheckB(term)){
-                    spellCheckedText.push(this.spellCheckB(term))
-                }else{
-                    spellCheckedText.push(term)
-                }
-            }  
-            for(let i=0;i< spellCheckedText.length;i++){
-                if(this.prefixEditB(spellCheckedText[i])){
-              
-                    spellCheckedText[i] = this.prefixEditB(spellCheckedText[i])
-                }
-            }
-            return spellCheckedText.join(' ')
-         }
+        return result.join(' ')
 
     }
-   // fix the mr and mrs function
-   //check the spelling function
+    replaceTime(text, locale) {
+        let response = text;
+        if (locale === "american-to-british") {
+            const regex = /\b(\d{1,2}):(\d{2})\b/g; // Match American time format
+            response = response.replace(regex, (match, hours, minutes) => {
+                return `<span class="highlight">${hours}.${minutes}</span>`;
+            });
+        }
+        if (locale === "british-to-american") {
+            const regex = /\b(\d{1,2})\.(\d{2})\b/g; // Match British time format
+            response = response.replace(regex, (match, hours, minutes) => {
+                return `<span class="highlight">${hours}:${minutes}</span>`;
+            });
+        }
+        return response;
+    }
+    
+    // Main translation logic
+    translate(text, locale) {
+        if (!text) return '';
+        if (!this.mappings[locale]) {
+            throw new Error(`Invalid locale: ${locale}`);
+        }
+
+        const { spelling, titles, dictionary } = this.mappings[locale];
+
+        const first =  this.replaceText(
+            this.replaceText(text, dictionary), // Apply dictionary translations
+            spelling // Apply spelling corrections
+        )
+       
+        const final = this.replaceTitles(first, titles)
+        const response = this.replaceTime(final, locale)
+
+        if(response === text){
+            return  "Everything looks good to me!"
+        }
+        console.log(response)
+        return response
+        
+    }
 }
 
 module.exports = Translator;
