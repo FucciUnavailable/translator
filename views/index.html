@@ -2,44 +2,85 @@
 <html>
 
 <head>
-	<title>American/British English Translator</title>
-	<meta name="description" content="An example for the fCC QA American/British English Translator project" />
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>American/British English Translator</title>
+    <meta name="description" content="An example for the fCC QA American/British English Translator project" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link id="favicon" rel="icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png" type="image/x-icon">
-	<link rel="stylesheet" href="../public/style.css" type="text/css" />
+    <link rel="stylesheet" href="../public/style.css" type="text/css" />
 </head>
 
 <body>
-	<header>
-		<h1>
-			American / British English Translator
-		</h1>
-	</header>
-	<hr style="margin: 25px" />
-	<div class="container">
-		<div class="form-container">
-			<textarea
-          rows="10"
-          cols="60"
-          id="text-input"
-        ></textarea>
-        <br />
-        <select id="locale-select">
-          <option value="american-to-british">American to British</option>
-          <option value="british-to-american">British to American</option>
-        </select>
-        <input type="button" value="Translate" id="translate-btn"/>
-      </div>
-      <div id="output-container">
-        <div id="solution-container">
-          Translated Sentence:
-          <div id="translated-sentence"></div>
-          <div id="error-msg"></div>
+    <header>
+        <h1>
+            American / British English Translator
+        </h1>
+    </header>
+
+    <section class="intro">
+        <h2>Project Overview</h2>
+        <p>
+            The American/British English Translator project was built as a part of the FreeCodeCamp Quality Assurance certification. 
+            The goal of this project is to convert American English terms into their British English equivalents (and vice versa) 
+            by utilizing a set of predefined translations for common words and phrases.
+        </p>
+        <p>
+            This project is powered by Node.js, which handles the backend logic for translating the text. The frontend uses basic HTML, CSS, and JavaScript 
+            to take input from the user and display the translation results. The translation logic is implemented using regular expressions to identify and replace 
+            American words with their British counterparts, depending on the selected translation direction.
+        </p>
+        <p>
+            To ensure the functionality is robust, the project is tested with Mocha, a testing framework for Node.js. Mocha allows us to write unit tests 
+            to verify the correctness of our translation function, ensuring that the tool works as expected and handles edge cases correctly.
+        </p>
+    </section>
+
+    <hr style="margin: 25px" />
+
+    <div class="container">
+        <div class="form-container">
+            <textarea rows="10" cols="60" id="text-input" placeholder="Enter text here..."></textarea>
+            <br />
+            <select id="locale-select">
+                <option value="american-to-british">American to British</option>
+                <option value="british-to-american">British to American</option>
+            </select>
+            <input type="button" value="Translate" id="translate-btn" />
+            <!-- Button to load random fun phrases -->
+            <input type="button" value="Try Fun Phrase" id="fun-phrase-btn" />
         </div>
-      </div>
+
+        <div id="output-container">
+            <div id="solution-container">
+                <h3>Translated Sentence:</h3>
+                <div id="translated-sentence"></div>
+                <div id="error-msg"></div>
+            </div>
+        </div>
     </div>
-  </body>
-  <script src="../public/index.js"></script>
+
+    <footer>
+        <h2>How It Works</h2>
+        <p>
+            1. When the user enters a sentence or phrase in the textarea and clicks "Translate", the system detects the selected language translation direction (American to British or vice versa).
+        </p>
+        <p>
+            2. The translation is done by matching the input text with predefined mappings stored in an object. This object contains common word replacements between American and British English (e.g., "color" -> "colour").
+        </p>
+        <p>
+            3. Once the translation is applied, the result is displayed below in real-time, showing the translated version of the sentence or a message if no changes were needed.
+        </p>
+        <p>
+            4. The backend logic is built with Node.js, and the translation process is handled efficiently by the server. Mocha testing is employed to validate that 
+            the translation functions behave as expected, ensuring the system performs correctly across various edge cases and inputs.
+        </p>
+        <p>
+            This project demonstrates how to handle text processing, regular expressions, and object manipulation in JavaScript, while also incorporating testing to ensure quality and reliability.
+        </p>
+    </footer>
+
+    <script src="../public/index.js"></script>
+</body>
+
 </html>

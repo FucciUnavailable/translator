@@ -27,4 +27,33 @@ const translateHandler = async () => {
   return;
 };
 
+
+
 document.getElementById("translate-btn").addEventListener("click", translateHandler)
+// List of fun phrases for both American to British and British to American
+const funPhrases = {
+  "american-to-british": [
+      "I’m going to the mall to grab a soda pop.",
+      "I ate yogurt for breakfast.",
+      "Like a high tech Rube Goldberg machine.",
+      "To play hooky means to skip class or work.",
+      "The parking lot was full."
+  ],
+  "british-to-american": [
+      "Paracetamol takes up to an hour to work.",
+      "The car boot sale at Boxted Airfield was called off.",
+      "I had a bicky then went to the chippy.'",
+      "I spent the bank holiday at the funfair.",
+      "First, caramelise the onions."
+  ]
+};
+
+// Add event listener to the fun phrase button
+document.getElementById('fun-phrase-btn').addEventListener('click', () => {
+  const locale = document.getElementById('locale-select').value;
+  const phrases = funPhrases[locale];
+  const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+  // Insert the random fun phrase into the textarea
+  document.getElementById('text-input').value = randomPhrase;
+});
